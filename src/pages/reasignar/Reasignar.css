@@ -1,0 +1,51 @@
+.contenedor-logo img{
+    width: 75%;
+    margin-top: -4rem;
+    
+}
+.login-container{
+    
+    font-family: 'Poppins', sans-serif;
+}
+
+.input-bg{
+    background-color: #f3f3f3;
+    color: #dbd5d5;
+    font-size: 0.9rem;
+    height: 2.9rem;
+}
+.custom-btn{
+    padding: 0.6rem;
+    border-radius: 4px;
+}
+.custom-btn-blue{
+    border: 2px solid #057ab7;
+    background-color: #057ab7;
+    color: #fff;
+    padding: 14px;
+}
+.custom-btn-white{
+    border: 2px solid #e5e7e9;
+    background-color: #fdfeff;
+    color: #000;
+    padding: 14px;
+}
+
+
+@media screen and (max-width: 1000px) {
+    .contenedor-logo img {
+      width: 75%;
+       margin-bottom: 4rem;
+      margin-top: -4rem;
+    }
+    .contenedor-login{
+        width: 105%;
+       
+    }
+    
+  }
+  @media only screen and (max-width: 450px){
+  .shadow{
+        box-shadow: none !important;
+    }
+}
