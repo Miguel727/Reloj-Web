@@ -75,13 +75,9 @@ const AgregarEmail = () => {
                     type="submit"
                     className="custom-btn custom-btn-blue"
                   >
-                    {loading ? (
-                      <div className="spinner-border text-light" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                    ) : (
+                    
                       "Enviar"
-                    )}
+                   
                   </button>
                 </div>
                 <div className="my-4">

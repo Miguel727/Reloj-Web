@@ -113,14 +113,10 @@ console.log("datos",data);
     let currentY = startY;
 
     const headers = Object.keys(data[0]);
-    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 12]; // Columnas que deseas omitir
+    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9,10,13]; // Columnas que deseas omitir
 
     const columnNames = {
-      fk_empleado_codigo: "Ficha",
       registro_fecha: "Fecha",
-      horas_trabajadas: "hs trbajadas",
-      horas_extras: "hs extra",
-      llegada_tarde: "llegada tarde",
       entrada: "Entrada",
       salida: "Salida",
     };
@@ -307,26 +303,7 @@ console.log("datos",data);
       selector: (row) => row.salida,
       sortable: true,
     },
-    // {
-    //   name: "Horas a trabajar",
-    //   selector: (row) => row.horas_debe_trabajar,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Horas Trabajadas",
-    //   selector: (row) => row.horas_trabajadas,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Horas Extras",
-    //   selector: (row) => row.horas_extras,
-    //   sortable: true,
-    // },
-    // {
-    //   name: "Horas Faltadas",
-    //   selector: (row) => row.no_trabajo,
-    //   sortable: true,
-    // },
+  
   ];
 
   const paginacionOpciones = {

@@ -104,13 +104,9 @@ const Recuperar = () => {
                     type="submit"
                     className="custom-btn custom-btn-blue"
                   >
-                    {loading ? (
-                      <div className="spinner-border text-light" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                    ) : (
+                    
                       "Recuperar"
-                    )}
+                   
                   </button>
                 </div>
                 <div className="my-4">
