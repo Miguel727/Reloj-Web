@@ -5,7 +5,7 @@ import logoIntendencia from "../../img/LOGO.png";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import { API_BASE_URL } from "../../../src/config";
 import Swal from "sweetalert2";
 
@@ -33,28 +33,33 @@ const Login = () => {
     event.preventDefault();
 
     setLoading(true);
+
     const codigoModificado = agregarPrefijoFicha(fk_empleado_codigo); 
     const requestData = { fk_empleado_codigo: codigoModificado, password };
     
     axios
       .post(`${API_BASE_URL}/loginApi`, requestData)
       .then((result) => {
-        console.log(result.status);
-        if (result.status === 200) {
+       
+        if (result.status === HttpStatusCode.Ok) {
+
           setLoading(false);
-          localStorage.setItem("token", result.data.access_token);
-          localStorage.setItem("user", JSON.stringify(result.data.user));
+
+          sessionStorage.setItem("token", result.data.access_token);
+          sessionStorage.setItem("user", JSON.stringify(result.data.user));
           dispatch({
             type: "LOGIN_SUCCESS",
             payload: result.data.user,
           });
           setLoading(false);
+        
           navigate("/inicio");
         }
       })
       .catch((error) => {
-        console.log(error);
+       
         setLoading(false);
+
         Swal.fire({
           icon: "error",
           title: "Acceso denegado",
@@ -62,7 +67,6 @@ const Login = () => {
       });
   };
 
-  
   
 
   return (
@@ -96,6 +100,7 @@ const Login = () => {
                     onChange={(ev) => setFicha(ev.target.value)}
                     className="p-2 mt-4 mb-2 form-control input-bg"
                     placeholder="Ficha"
+
                   />
                   <input
                     type="password"
@@ -103,6 +108,7 @@ const Login = () => {
                     onChange={(ev) => setPassword(ev.target.value)}
                     className="p-2 mb-2 form-control input-bg"
                     placeholder="Contraseña"
+                   
                   />
                   <div className="mt-3 d-grid">
                     <button

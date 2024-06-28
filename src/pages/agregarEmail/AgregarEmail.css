@@ -1,16 +1,16 @@
 .contenedor-logo img{
     width: 75%;
-    margin-top: 0rem;
+    margin-top: -4rem;
     
 }
 .login-container{
-    margin-top: 10rem;
+    
     font-family: 'Poppins', sans-serif;
 }
 
 .input-bg{
     background-color: #f3f3f3;
-    color: #292424;
+    color: #dbd5d5;
     font-size: 0.9rem;
     height: 2.9rem;
 }
@@ -37,12 +37,10 @@
       width: 75%;
        margin-bottom: 4rem;
       margin-top: -4rem;
-
-      margin-left: 3rem;
     }
-    .contenedor-login{
-        width: 105%;
-       
+    .contenedor-email{
+        width: 100%;
+        margin-top: -6rem;
     }
     
   }

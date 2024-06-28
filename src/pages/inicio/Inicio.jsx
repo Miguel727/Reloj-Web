@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logoIntendencia from "../../img/LOGO.png";
 import axios from "axios";
 import NavBar from "../../components/navbar/NavBar";
@@ -8,8 +9,12 @@ import "./inicio.css";
 import Footer from "../../components/footer/Footer";
 import jsPDF from "jspdf";
 
+
 const url = "http://control.horario.ic.gub.uy/api/reporte";
-const token = localStorage.getItem("token");
+let token = sessionStorage.getItem("token")
+
+
+
 const headers = {
   Authorization: `Bearer ${token}`,
   Accept: "application/json",
@@ -19,11 +24,16 @@ const Inicio = () => {
   const [data, setData] = useState(null);
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
-  const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
-  console.log("CODIGO:", user.fk_empleado_codigo);
+  let user = JSON.parse(sessionStorage.getItem("user"));
+ 
+  
 
   useEffect(() => {
+ 
+   
+ 
+  
+
     obtenerFechasPorDefecto();
     if (desde && hasta) {
       fetchData();
@@ -90,7 +100,7 @@ const Inicio = () => {
     if (!data) {
       return;
     }
-
+console.log("datos",data);
     const doc = new jsPDF();
 
     let startX = 10;
@@ -103,7 +113,7 @@ const Inicio = () => {
     let currentY = startY;
 
     const headers = Object.keys(data[0]);
-    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8]; // Columnas que deseas omitir
+    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 12]; // Columnas que deseas omitir
 
     const columnNames = {
       fk_empleado_codigo: "Ficha",
@@ -278,7 +288,7 @@ const Inicio = () => {
     });
 
     // Guardar el PDF como archivo descargable
-    doc.save("Reporte_" + user.fk_empleado_codigo + ".pdf");
+    doc.save("Reporte_" + quitarPrefijoFicha(user.fk_empleado_codigo) + ".pdf");
   };
 
   const columnas = [
