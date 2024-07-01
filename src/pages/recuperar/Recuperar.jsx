@@ -105,7 +105,7 @@ const Recuperar = () => {
                     className="custom-btn custom-btn-blue"
                   >
                     
-                      "Recuperar"
+                      Recuperar
                    
                   </button>
                 </div>
