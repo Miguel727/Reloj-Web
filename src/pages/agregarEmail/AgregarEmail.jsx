@@ -14,7 +14,7 @@ const AgregarEmail = () => {
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const handleEmailUpdate = (event) => {
+  const handleEmailUpdate = async (event) => {
     event.preventDefault();
     setLoading(true);
 
@@ -26,12 +26,12 @@ const AgregarEmail = () => {
             title: 'Error',
             text: 'No se encontró el token de autenticación.',
         });
+        setLoading(false);
         return;
     }
 
     const headers = {
         'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
         'Content-Type': 'application/json',
     };
 
@@ -40,13 +40,12 @@ const AgregarEmail = () => {
     };
 
     try {
-        const response = axios.post(`${API_BASE_URL}/agregarEmail`, requestData, {
+        const response = await axios.post(`${API_BASE_URL}/agregarEmail`, requestData, {
             headers,
             withCredentials: true,
         });
-
+        
         if (response.status === 200) {
-            setLoading(false);
             Swal.fire({
                 icon: 'success',
                 title: 'Correo asociado',
@@ -58,15 +57,16 @@ const AgregarEmail = () => {
             throw new Error('La respuesta no fue exitosa');
         }
     } catch (error) {
-      setLoading(false);
         Swal.fire({
             icon: 'error',
             title: 'Error',
             text: 'No se pudo asociar el correo electrónico. Por favor, intenta de nuevo.',
         });
         console.error(error.response ? error.response.data : error.message);
+    } finally {
+        setLoading(false);
     }
-  };
+};
 
   return (
     <>
