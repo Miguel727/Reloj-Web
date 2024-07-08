@@ -14,36 +14,59 @@ const AgregarEmail = () => {
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const handleEmailUpdate = (event) => {
+  const handleEmailUpdate = async (event) => {
     event.preventDefault();
     setLoading(true);
 
-    const requestData = {
-      fk_empleado_codigo: user.fk_empleado_codigo,
-      email,
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se encontró el token de autenticación.',
+        });
+        setLoading(false);
+        return;
+    }
+
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
     };
 
-    axios
-      .post(`${API_BASE_URL}/agregarEmail`, requestData)
-      .then((response) => {
-        setLoading(false);
-        Swal.fire({
-          icon: "success",
-          title: "Correo asociado",
-          text: "Tu correo electrónico ha sido asociado exitosamente.",
-        }).then(() => {
-          navigate("/inicio");
+    const requestData = {
+        email: email,
+    };
+
+    try {
+        const response = await axios.post(`${API_BASE_URL}/agregarEmail`, requestData, {
+            headers,
+            withCredentials: true,
         });
-      })
-      .catch((error) => {
-        setLoading(false);
+        
+        if (response.status === 200) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Correo asociado',
+                text: 'Tu correo electrónico ha sido asociado exitosamente.',
+            }).then(() => {
+                navigate('/inicio');
+            });
+        } else {
+            throw new Error('La respuesta no fue exitosa');
+        }
+    } catch (error) {
         Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudo asociar el correo electrónico. Por favor, intenta de nuevo.",
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo asociar el correo electrónico. Por favor, intenta de nuevo.',
         });
-      });
-  };
+        console.error(error.response ? error.response.data : error.message);
+    } finally {
+        setLoading(false);
+    }
+};
 
   return (
     <>
@@ -76,7 +99,7 @@ const AgregarEmail = () => {
                     className="custom-btn custom-btn-blue"
                   >
                     
-                      "Enviar"
+                      Enviar
                    
                   </button>
                 </div>

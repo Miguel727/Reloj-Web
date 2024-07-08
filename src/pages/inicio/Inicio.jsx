@@ -113,7 +113,8 @@ console.log("datos",data);
     let currentY = startY;
 
     const headers = Object.keys(data[0]);
-    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9,10,13]; // Columnas que deseas omitir
+    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9,10,13]; // Columnas que deseas omitir en Produccion
+    //const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 12]; // Columnas que deseas omitir en local 
 
     const columnNames = {
       registro_fecha: "Fecha",

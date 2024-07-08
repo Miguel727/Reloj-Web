@@ -16,9 +16,27 @@ const Recuperar = () => {
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem("user"));
 
-  const handlePasswordChange = (event) => {
+  const handlePasswordChange = async(event) => {
     event.preventDefault();
     setLoading(true);
+
+
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se encontró el token de autenticación.',
+      });
+      setLoading(false);
+      return;
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
 
     if (newPassword !== confirmPassword) {
       setLoading(false);
@@ -31,14 +49,19 @@ const Recuperar = () => {
     }
 
     const requestData = {
-      fk_empleado_codigo: user.fk_empleado_codigo,
-      currentPassword,
-      newPassword,
+      "password": currentPassword,
+      "password_new": newPassword,
+      "password_confirmation": confirmPassword
+
     };
 
-    axios
-      .post(`${API_BASE_URL}/cambioContrasenaWeb`, requestData)
-      .then((response) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/cambio   ContrasenaWeb`, requestData, {
+        headers,
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
         setLoading(false);
         Swal.fire({
           icon: "success",
@@ -47,15 +70,19 @@ const Recuperar = () => {
         }).then(() => {
           navigate("/inicio");
         });
-      })
-      .catch((error) => {
-        setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudo cambiar la contraseña. Por favor, intenta de nuevo.",
-        });
+      } else {
+        throw new Error('La respuesta no fue exitosa');
+      }
+    } catch (error) {
+      setLoading(false);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo cambiar la contraseña. Por favor, intenta de nuevo.",
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,9 +131,9 @@ const Recuperar = () => {
                     type="submit"
                     className="custom-btn custom-btn-blue"
                   >
-                    
-                      "Recuperar"
-                   
+
+                    Recuperar
+
                   </button>
                 </div>
                 <div className="my-4">

@@ -81,7 +81,7 @@ const Reasignar = () => {
                 <div className="mt-3 d-grid">
                   <button type="submit" className="custom-btn custom-btn-blue">
                     
-                      "Recuperar"
+                      Recuperar
                    
                   </button>
                 </div>
