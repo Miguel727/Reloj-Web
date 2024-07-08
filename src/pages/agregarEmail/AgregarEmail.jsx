@@ -31,38 +31,40 @@ const AgregarEmail = () => {
     }
 
     const headers = {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
+        Accept: "application/json",
+        'Authorization': `Bearer ${token}`,
     };
 
     const requestData = {
-        email: email,
+        email: email
     };
 
-    try {
-        const response = await axios.post(`${API_BASE_URL}/agregarEmail`, requestData, {
-            headers,
-            withCredentials: true,
+    try {// Agregar registro
+      const response = await axios.post(`${API_BASE_URL}/agregar_correo`, requestData, { headers });
+      
+      if (response.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Correo asociado',
+          text: response.data.message,
+        }).then(() => {
+            navigate('/inicio');
         });
-        
-        if (response.status === 200) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Correo asociado',
-                text: 'Tu correo electrónico ha sido asociado exitosamente.',
-            }).then(() => {
-                navigate('/inicio');
-            });
-        } else {
-            throw new Error('La respuesta no fue exitosa');
-        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.data.error,
+        });
+      }
     } catch (error) {
+      console.log(error)
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo asociar el correo electrónico. Por favor, intenta de nuevo.',
+            text: error.data.error,
         });
-        console.error(error.response ? error.response.data : error.message);
     } finally {
         setLoading(false);
     }

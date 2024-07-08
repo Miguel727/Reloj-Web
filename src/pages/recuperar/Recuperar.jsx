@@ -49,16 +49,14 @@ const Recuperar = () => {
     }
 
     const requestData = {
-      "password": currentPassword,
-      "password_new": newPassword,
-      "password_confirmation": confirmPassword
-
+      password: currentPassword,
+      password_new: newPassword,
+      password_confirmation: confirmPassword
     };
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/cambio   ContrasenaWeb`, requestData, {
-        headers,
-        withCredentials: true,
+      const response = await axios.post(`${API_BASE_URL}/cambioContrasenaWeb`, requestData, {
+        headers
       });
 
       if (response.status === 200) {
@@ -66,19 +64,24 @@ const Recuperar = () => {
         Swal.fire({
           icon: "success",
           title: "Contraseña cambiada",
-          text: "Tu contraseña ha sido cambiada exitosamente.",
+          text: response.data.message,
         }).then(() => {
           navigate("/inicio");
         });
       } else {
-        throw new Error('La respuesta no fue exitosa');
+        setLoading(false);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.data.error,
+        });
       }
     } catch (error) {
       setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo cambiar la contraseña. Por favor, intenta de nuevo.",
+        text: error.data.error,
       });
     } finally {
       setLoading(false);
