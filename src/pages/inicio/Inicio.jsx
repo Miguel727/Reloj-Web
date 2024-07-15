@@ -106,8 +106,8 @@ const Inicio = () => {
     let currentY = startY;
 
     const headers = Object.keys(data[0]);
-    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9,10,13]; // Columnas que deseas omitir en Produccion
-    //const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 12]; // Columnas que deseas omitir en local 
+    //const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9,10,13]; // Columnas local
+    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 12]; // Columnas produccion
 
     const columnNames = {
       registro_fecha: "Fecha",
@@ -284,9 +284,13 @@ const Inicio = () => {
   const columnas = [
     {
       name: "Fecha",
-      selector: (row) => row.registro_fecha,
+      selector: (row) => {
+        const [year, month, day] = row.registro_fecha.split('-');
+        return `${day}-${month}-${year}`;
+      },
       sortable: true,
-    },
+    }
+,    
     {
       name: "Entrada",
       selector: (row) => row.entrada,
