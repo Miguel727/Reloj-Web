@@ -9,11 +9,8 @@ import "./inicio.css";
 import Footer from "../../components/footer/Footer";
 import jsPDF from "jspdf";
 
-
 const url = "http://control.horario.ic.gub.uy/api/reporte";
 let token = sessionStorage.getItem("token")
-
-
 
 const headers = {
   Authorization: `Bearer ${token}`,
@@ -26,14 +23,7 @@ const Inicio = () => {
   const [hasta, setHasta] = useState("");
   let user = JSON.parse(sessionStorage.getItem("user"));
  
-  
-
   useEffect(() => {
- 
-   
- 
-  
-
     obtenerFechasPorDefecto();
     if (desde && hasta) {
       fetchData();
@@ -73,13 +63,16 @@ const Inicio = () => {
         },
         { headers }
       );
-      // console.log("Respuesta del servidor:", response.data);
+      
+      let registros = null;
+      
+      if(response.data.registros_ok){
+        registros = response.data.registros_ok[user.fk_empleado_codigo];
+      }
 
-      const registros = response.data.registros_ok[user.fk_empleado_codigo];
-      console.log(registros);
       setData(registros);
     } catch (error) {
-      console.error("Error al hacer la solicitud:", error);
+      console.log(error);
     }
   };
 
@@ -100,7 +93,7 @@ const Inicio = () => {
     if (!data) {
       return;
     }
-console.log("datos",data);
+
     const doc = new jsPDF();
 
     let startX = 10;

@@ -68,7 +68,6 @@ const Login = () => {
   };
 
   
-
   return (
     <div className="container login-container">
       <div className="row">
@@ -89,7 +88,7 @@ const Login = () => {
               ""
             )}
 
-            <div className="card-body px-9">
+            <div className="card-body px-9 text-center">
               <h3>Gestor de Marcas</h3>
 
               {
@@ -100,16 +99,18 @@ const Login = () => {
                     onChange={(ev) => setFicha(ev.target.value)}
                     className="p-2 mt-4 mb-2 form-control input-bg"
                     placeholder="Ficha"
-
+                    required
                   />
+                  
                   <input
                     type="password"
                     value={password}
                     onChange={(ev) => setPassword(ev.target.value)}
                     className="p-2 mb-2 form-control input-bg"
                     placeholder="Contraseña"
-                   
+                    required
                   />
+                  
                   <div className="mt-3 d-grid">
                     <button
                       type="submit"

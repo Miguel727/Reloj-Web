@@ -81,7 +81,7 @@ const Recuperar = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.data.error,
+        text: error.message,
       });
     } finally {
       setLoading(false);
@@ -91,7 +91,7 @@ const Recuperar = () => {
   return (
     <>
       <NavBar className="nav" />
-      <div className="container login-container">
+      <div className="container login-container text-center">
         <div className="contenedor-recuperar col-md-9 col-sm-12">
           <h4>Funcionario: {user.nombre}</h4>
           <div className="card shadow">
@@ -135,7 +135,7 @@ const Recuperar = () => {
                     className="custom-btn custom-btn-blue"
                   >
 
-                    Recuperar
+                Cambiar contraseña
 
                   </button>
                 </div>

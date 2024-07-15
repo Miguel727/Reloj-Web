@@ -51,7 +51,7 @@ const Reasignar = () => {
   };
 
   return (
-    <div className="container login-container">
+    <div className="container login-container text-center">
       <div className="row">
         <div className="contenedor-logo col-md-7 col-sm-12 d-flex justify-content-center align-items-center">
           <div className="column">
@@ -67,7 +67,7 @@ const Reasignar = () => {
                 </div>
               </div>
             )}
-            <div className="card-body px-9">
+            <div className="card-body px-9 text-center">
               <h3>Recuperar Contraseña</h3>
               <form onSubmit={handlePasswordReset}>
                 <input

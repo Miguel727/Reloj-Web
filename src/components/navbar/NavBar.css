@@ -1,3 +1,29 @@
-.navbar{
-    width: 99%;
-}
+/* Centrar los elementos en dispositivos móviles */
+@media (max-width: 767.98px) {
+    .navbar-nav {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .centered-item {
+      text-align: center;
+      width: 100%;
+    }
+  
+    .centered-item .btn {
+      display: block;
+      margin: 0 auto;
+    }
+  }
+  
+  /* Opcional: Estilo para botones */
+  .nav-item .btn {
+    color: #000; /* Cambia el color según tu preferencia */
+    background-color: #f8f9fa; /* Cambia el color de fondo según tu preferencia */
+  }
+  
+  .nav-item .btn:hover {
+    color: #fff;
+    background-color: #007bff; /* Cambia el color de fondo al pasar el mouse según tu preferencia */
+  }
+  

@@ -59,7 +59,6 @@ const AgregarEmail = () => {
         });
       }
     } catch (error) {
-      console.log(error)
         Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -73,7 +72,7 @@ const AgregarEmail = () => {
   return (
     <>
       <NavBar className="nav" />
-      <div className="container login-container">
+      <div className="container login-container text-center">
         <div className="contenedor-email col-md-9 col-sm-12">
           <h4>Funcionario: {user.nombre}</h4>
           <div className="card shadow">
