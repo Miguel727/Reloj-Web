@@ -88,36 +88,44 @@ const Inicio = () => {
     }
   };
 
-  //Quitar entrada y salida
+
+  const generateColumns = (data) => {
+    return Object.keys(data[0])
+      .filter((key, index) => !columnsToSkip.includes(index))
+      .map((key) => ({
+        name: columnNames[key] || key,
+        selector: (row) => row[key],
+      }));
+  };
+  
   const generarPDF = () => {
     if (!data) {
       return;
     }
-
+  
     const doc = new jsPDF();
-
+  
     let startX = 10;
-    //let centerX;
     let startY = 20;
-
+  
     const cellHeight = 10;
     const minRowsPerPage = 20; // Número mínimo de filas por página
-
+  
     let currentY = startY;
-
-    const headers = Object.keys(data[0]);
-    //const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9,10,13]; // Columnas local
-    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 12]; // Columnas produccion
-
+  
+    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]; // Columnas a omitir
+  
     const columnNames = {
       registro_fecha: "Fecha",
       entrada: "Entrada",
       salida: "Salida",
     };
-
-    const title =
-      "Reporte usuario: " + quitarPrefijoFicha(user.fk_empleado_codigo); // Título del PDF
-
+  
+    const visibleColumns = generateColumns(data);
+    const columnKeys = visibleColumns.map((col) => col.name);
+  
+    const title = "Reporte usuario: " + quitarPrefijoFicha(user.fk_empleado_codigo); // Título del PDF
+  
     const monthsInSpanish = [
       "Enero",
       "Febrero",
@@ -132,154 +140,92 @@ const Inicio = () => {
       "Noviembre",
       "Diciembre",
     ];
-
-    // Obtener el nombre del mes en español
-    const now = new Date(); // Obtener la fecha actual
-    const month = now.getMonth(); // Obtener el valor numérico del mes
-    const spanishMonth = monthsInSpanish[month]; // Obtener el nombre del mes en español
-
-    // Agregar información adicional con el mes en español
-    // const additionalInfo = ` ${spanishMonth} ${now.getFullYear()}`;
-    //const additionalInfo = "Información adicional";
-    // Establecer la alineación de las celdas a 'center'
+  
+    const now = new Date();
+    const month = now.getMonth();
+    const spanishMonth = monthsInSpanish[month];
+  
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
-
+  
     // Agregar título
     doc.setFontSize(16);
     doc.text(title, startX, currentY);
-
+  
     // Agregar imagen en el lado opuesto
     const imageWidth = 75; // Ancho de la imagen
     const imageHeight = 20; // Alto de la imagen
-    const imageX = doc.internal.pageSize.width - imageWidth - startX; // Posición X de la imagen
-    doc.addImage(
-      logoIntendencia,
-      "JPEG",
-      imageX,
-      currentY - 10,
-      imageWidth,
-      imageHeight
-    );
-
+    const imageX = doc.internal.pageSize.width - imageWidth - startX;
+    doc.addImage(logoIntendencia, "JPEG", imageX, currentY - 10, imageWidth, imageHeight);
+  
     currentY += 20; // Espacio después del título
-
-    // Agregar información adicional centrada
-    // const textWidth =
-    //  (doc.getStringUnitWidth(additionalInfo) * doc.internal.getFontSize()) /
-    doc.internal.scaleFactor;
-    // centerX = (doc.internal.pageSize.width - textWidth) / 2;
-
-    doc.setFontSize(14);
-    // doc.text(additionalInfo, centerX, currentY);
-    currentY += 15; // Espacio después de la información adicional
-
+  
     // Agregar encabezados de columna con mejor formato (omitir columnas)
-    headers.forEach((header, index) => {
-      if (!columnsToSkip.includes(index)) {
-        const columnName = columnNames[header] || header;
-        const columnWidth =
-          (doc.internal.pageSize.width - 20) /
-          (headers.length - columnsToSkip.length);
-        const cellX =
-          startX +
-          (index - columnsToSkip.filter((col) => col < index).length) *
-            columnWidth;
-        doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
-        doc.text(
-          columnName,
-          cellX + columnWidth / 2,
-          currentY + cellHeight / 2,
-          {
-            align: "center",
-            valign: "middle",
-          }
-        );
-      }
+    visibleColumns.forEach((column, index) => {
+      const columnWidth = (doc.internal.pageSize.width - 20) / visibleColumns.length;
+      const cellX = startX + index * columnWidth;
+      doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
+      doc.text(column.name, cellX + columnWidth / 2, currentY + cellHeight / 2, {
+        align: "center",
+        valign: "middle",
+      });
     });
-
+  
     currentY += cellHeight;
-
     let rowsAdded = 0;
-
+  
     // Agregar filas de datos (omitir columnas)
     data.forEach((row) => {
       if (rowsAdded >= minRowsPerPage) {
         doc.addPage();
         currentY = startY;
         rowsAdded = 0;
-
+  
         // Agregar encabezados de columna nuevamente en la nueva página
-        headers.forEach((header, index) => {
-          if (!columnsToSkip.includes(index)) {
-            const columnName = columnNames[header] || header;
-            const columnWidth =
-              (doc.internal.pageSize.width - 20) /
-              (headers.length - columnsToSkip.length);
-            const cellX =
-              startX +
-              (index - columnsToSkip.filter((col) => col < index).length) *
-                columnWidth;
-            doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
-            doc.text(
-              columnName,
-              cellX + columnWidth / 2,
-              currentY + cellHeight / 2,
-              {
-                align: "center",
-                valign: "middle",
-              }
-            );
-          }
+        visibleColumns.forEach((column, index) => {
+          const columnWidth = (doc.internal.pageSize.width - 20) / visibleColumns.length;
+          const cellX = startX + index * columnWidth;
+          doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
+          doc.text(column.name, cellX + columnWidth / 2, currentY + cellHeight / 2, {
+            align: "center",
+            valign: "middle",
+          });
         });
-
+  
         currentY += cellHeight;
       }
-
-      const values = Object.values(row);
-      values.forEach((value, columnIndex) => {
-        if (!columnsToSkip.includes(columnIndex)) {
-          const columnWidth =
-            (doc.internal.pageSize.width - 20) /
-            (headers.length - columnsToSkip.length);
-          const cellX =
-            startX +
-            (columnIndex -
-              columnsToSkip.filter((col) => col < columnIndex).length) *
-              columnWidth;
-          doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
-          // Formatear la fecha antes de agregarla al PDF (inversión)
-          if (headers[columnIndex] === "registro_fecha") {
-            const dateParts = value.split("-");
-            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-            doc.text(
-              formattedDate,
-              cellX + columnWidth / 2,
-              currentY + cellHeight / 2,
-              {
-                align: "center",
-                valign: "middle",
-              }
-            );
-          } else {
-            doc.text(
-              value.toString(),
-              cellX + columnWidth / 2,
-              currentY + cellHeight / 2,
-              { align: "center", valign: "middle" }
-            );
-          }
+  
+      visibleColumns.forEach((column, columnIndex) => {
+        const value = column.selector(row);
+        const columnWidth = (doc.internal.pageSize.width - 20) / visibleColumns.length;
+        const cellX = startX + columnIndex * columnWidth;
+        doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
+  
+        // Formatear la fecha antes de agregarla al PDF (inversión)
+        if (column.name === "Fecha") {
+          const dateParts = value.split("-");
+          const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+          doc.text(formattedDate, cellX + columnWidth / 2, currentY + cellHeight / 2, {
+            align: "center",
+            valign: "middle",
+          });
+        } else {
+          doc.text(value.toString(), cellX + columnWidth / 2, currentY + cellHeight / 2, {
+            align: "center",
+            valign: "middle",
+          });
         }
       });
-
+  
       currentY += cellHeight;
       rowsAdded += 1;
     });
-
+  
     // Guardar el PDF como archivo descargable
     doc.save("Reporte_" + quitarPrefijoFicha(user.fk_empleado_codigo) + ".pdf");
   };
+  
 
   const columnas = [
     {
