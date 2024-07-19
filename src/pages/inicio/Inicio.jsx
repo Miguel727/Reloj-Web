@@ -142,13 +142,13 @@ const Inicio = () => {
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
-        startY: 20,
+        startY: 50,
         theme: 'striped',
         headStyles: { fillColor: [22, 160, 133] },
         margin: { top: 10 },
       });
   
-      doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
+      //doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
       doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
     };
 
