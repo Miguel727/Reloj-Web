@@ -8,7 +8,7 @@ import { Form, Button, Row, Col } from "react-bootstrap";
 import "./inicio.css";
 import Footer from "../../components/footer/Footer";
 import jsPDF from "jspdf";
-import printJS from "print-js";
+import autoTable from 'jspdf-autotable';
 
 const url = "http://control.horario.ic.gub.uy/api/reporte";
 let token = sessionStorage.getItem("token")
@@ -267,35 +267,35 @@ const Inicio = () => {
 
 
   const imprimirTabla = () => {
-    if (!data) {
-      return;
-    }
-
-    const doc = new jsPDF();
-    const tableColumn = ["Fecha", "Entrada", "Salida"];
-    const tableRows = [];
-
-    data.forEach(row => {
-      const rowData = [
-        row.registro_fecha.split('-').reverse().join('-'),
-        row.entrada,
-        row.salida,
-      ];
-      tableRows.push(rowData);
-    });
-
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 20,
-      theme: 'striped',
-      headStyles: { fillColor: [22, 160, 133] },
-      margin: { top: 10 },
-    });
-
-    doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
-    doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
-  };
+      if (!data) {
+        return;
+      }
+  
+      const doc = new jsPDF();
+      const tableColumn = ["Fecha", "Entrada", "Salida"];
+      const tableRows = [];
+  
+      data.forEach(row => {
+        const rowData = [
+          row.registro_fecha.split('-').reverse().join('-'),
+          row.entrada,
+          row.salida,
+        ];
+        tableRows.push(rowData);
+      });
+  
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 20,
+        theme: 'striped',
+        headStyles: { fillColor: [22, 160, 133] },
+        margin: { top: 10 },
+      });
+  
+      doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
+      doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
+    };
 
 
 
