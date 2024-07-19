@@ -103,7 +103,7 @@ const Inicio = () => {
       let startX = 10;
       //let centerX;
       let startY = 20;
-      
+      let currentY = startY;
       const tableColumn = ["Fecha", "Entrada", "Salida"];
       const tableRows = [];
       const title =
