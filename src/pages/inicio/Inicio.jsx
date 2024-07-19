@@ -265,15 +265,41 @@ const Inicio = () => {
     doc.save("Reporte_" + quitarPrefijoFicha(user.fk_empleado_codigo) + ".pdf");
   };
 
-//nueva
+
   const imprimirTabla = () => {
-    printJS({
-      printable: "tabla",
-      type: "html",
-      targetStyles: ["*"],
-      header: "Reporte de Usuario",
+    if (!data) {
+      return;
+    }
+
+    const doc = new jsPDF();
+    const tableColumn = ["Fecha", "Entrada", "Salida"];
+    const tableRows = [];
+
+    data.forEach(row => {
+      const rowData = [
+        row.registro_fecha.split('-').reverse().join('-'),
+        row.entrada,
+        row.salida,
+      ];
+      tableRows.push(rowData);
     });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      theme: 'striped',
+      headStyles: { fillColor: [22, 160, 133] },
+      margin: { top: 10 },
+    });
+
+    doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
+    doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
   };
+
+
+
+
 
 
   const columnas = [
@@ -360,7 +386,7 @@ const Inicio = () => {
         </Form>
 
         {data && (
-          <div id="tabla">
+          
           <DataTable
             id="tabla"
             className="tabla"
@@ -383,7 +409,7 @@ const Inicio = () => {
               },
             }}
           />
-           </div>
+      
         )}
       </div>
 
