@@ -93,61 +93,26 @@ const Inicio = () => {
     }
   };
 
- 
-  const generarPDF = () => {
-    if (!data) {
-      return;
-    }
-
-    const doc = new jsPDF();
-
-    let startX = 10;
-    let startY = 20;
-
-    const cellHeight = 10;
-    const minRowsPerPage = 20;
-
-    let currentY = startY;
-
-    const headers = Object.keys(data[0]);
-    const columnsToSkip = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13];
-
-    const columnNames = {
-      registro_fecha: "Fecha",
-      entrada: "Entrada",
-      salida: "Salida",
-    };
-
-    const title =
+  const imprimirTabla = () => {
+      if (!data) {
+        return;
+      }
+  
+      const doc = new jsPDF();
+      const tableColumn = ["Fecha", "Entrada", "Salida"];
+      const tableRows = [];
+      const title =
       "Reporte usuario: " + quitarPrefijoFicha(user.fk_empleado_codigo);
 
-    const monthsInSpanish = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-    ];
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+  
+      doc.setFontSize(16);
+      doc.text(title, startX, currentY);
 
-    const now = new Date();
-    const month = now.getMonth();
-    const spanishMonth = monthsInSpanish[month];
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-
-    doc.setFontSize(16);
-    doc.text(title, startX, currentY);
-
-    const imageWidth = 75;
+      const imageWidth = 75;
     const imageHeight = 20;
     const imageX = doc.internal.pageSize.width - imageWidth - startX;
     doc.addImage(
@@ -159,122 +124,7 @@ const Inicio = () => {
       imageHeight
     );
 
-    currentY += 20;
 
-    doc.setFontSize(14);
-    currentY += 15;
-
-    headers.forEach((header, index) => {
-      if (!columnsToSkip.includes(index)) {
-        const columnName = columnNames[header] || header;
-        const columnWidth =
-          (doc.internal.pageSize.width - 20) /
-          (headers.length - columnsToSkip.length);
-        const cellX =
-          startX +
-          (index - columnsToSkip.filter((col) => col < index).length) *
-            columnWidth;
-        doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
-        doc.text(
-          columnName,
-          cellX + columnWidth / 2,
-          currentY + cellHeight / 2,
-          {
-            align: "center",
-            valign: "middle",
-          }
-        );
-      }
-    });
-
-    currentY += cellHeight;
-
-    let rowsAdded = 0;
-
-    data.forEach((row) => {
-      if (rowsAdded >= minRowsPerPage) {
-        doc.addPage();
-        currentY = startY;
-        rowsAdded = 0;
-
-        headers.forEach((header, index) => {
-          if (!columnsToSkip.includes(index)) {
-            const columnName = columnNames[header] || header;
-            const columnWidth =
-              (doc.internal.pageSize.width - 20) /
-              (headers.length - columnsToSkip.length);
-            const cellX =
-              startX +
-              (index - columnsToSkip.filter((col) => col < index).length) *
-                columnWidth;
-            doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
-            doc.text(
-              columnName,
-              cellX + columnWidth / 2,
-              currentY + cellHeight / 2,
-              {
-                align: "center",
-                valign: "middle",
-              }
-            );
-          }
-        });
-
-        currentY += cellHeight;
-      }
-
-      const values = Object.values(row);
-      values.forEach((value, columnIndex) => {
-        if (!columnsToSkip.includes(columnIndex)) {
-          const columnWidth =
-            (doc.internal.pageSize.width - 20) /
-            (headers.length - columnsToSkip.length);
-          const cellX =
-            startX +
-            (columnIndex -
-              columnsToSkip.filter((col) => col < columnIndex).length) *
-              columnWidth;
-          doc.rect(cellX, currentY, columnWidth, cellHeight, "S");
-          if (headers[columnIndex] === "registro_fecha") {
-            const dateParts = value.split("-");
-            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-            doc.text(
-              formattedDate,
-              cellX + columnWidth / 2,
-              currentY + cellHeight / 2,
-              {
-                align: "center",
-                valign: "middle",
-              }
-            );
-          } else {
-            doc.text(
-              value.toString(),
-              cellX + columnWidth / 2,
-              currentY + cellHeight / 2,
-              { align: "center", valign: "middle" }
-            );
-          }
-        }
-      });
-
-      currentY += cellHeight;
-      rowsAdded += 1;
-    });
-
-    doc.save("Reporte_" + quitarPrefijoFicha(user.fk_empleado_codigo) + ".pdf");
-  };
-
-
-  const imprimirTabla = () => {
-      if (!data) {
-        return;
-      }
-  
-      const doc = new jsPDF();
-      const tableColumn = ["Fecha", "Entrada", "Salida"];
-      const tableRows = [];
-  
       data.forEach(row => {
         const rowData = [
           row.registro_fecha.split('-').reverse().join('-'),
@@ -374,19 +224,11 @@ const Inicio = () => {
             </Col>
           </Row>
           <Button variant="primary" onClick={imprimirTabla} className="custom-button">
-  Imprimir Tabla
-</Button>
-          <Button
-            variant="primary"
-            onClick={generarPDF}
-            className="custom-button"
-          >
             Descargar PDF
-           </Button>  
+          </Button>
         </Form>
 
         {data && (
-          
           <DataTable
             id="tabla"
             className="tabla"
