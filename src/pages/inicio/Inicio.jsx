@@ -70,6 +70,10 @@ const Inicio = () => {
         registros = response.data.registros_ok[user.fk_empleado_codigo];
       }
 
+        // Invertir el orden de los datos
+        registros = registros.reverse();
+
+
       setData(registros);
     } catch (error) {
       console.log(error);
@@ -365,13 +369,13 @@ const Inicio = () => {
             </Col>
           </Row>
 
-          <Button
+       {/*   <Button
             variant="primary"
             onClick={generarPDF}
             className="custom-button"
           >
             Descargar PDF
-          </Button>
+           </Button>  */}
         </Form>
 
         {data && (
