@@ -8,6 +8,7 @@ import { Form, Button, Row, Col } from "react-bootstrap";
 import "./inicio.css";
 import Footer from "../../components/footer/Footer";
 import jsPDF from "jspdf";
+import printJS from "print-js";
 
 const url = "http://control.horario.ic.gub.uy/api/reporte";
 let token = sessionStorage.getItem("token")
@@ -264,6 +265,16 @@ const Inicio = () => {
     doc.save("Reporte_" + quitarPrefijoFicha(user.fk_empleado_codigo) + ".pdf");
   };
 
+//nueva
+  const imprimirTabla = () => {
+    printJS({
+      printable: "tabla",
+      type: "html",
+      targetStyles: ["*"],
+      header: "Reporte de Usuario",
+    });
+  };
+
 
   const columnas = [
     {
@@ -336,7 +347,9 @@ const Inicio = () => {
               </Form.Group>
             </Col>
           </Row>
-
+          <Button variant="primary" onClick={imprimirTabla} className="custom-button">
+  Imprimir Tabla
+</Button>
           <Button
             variant="primary"
             onClick={generarPDF}
