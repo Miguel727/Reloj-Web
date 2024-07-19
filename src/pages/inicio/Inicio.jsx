@@ -360,6 +360,7 @@ const Inicio = () => {
         </Form>
 
         {data && (
+          <div id="tabla">
           <DataTable
             id="tabla"
             className="tabla"
@@ -382,6 +383,7 @@ const Inicio = () => {
               },
             }}
           />
+           </div>
         )}
       </div>
 
