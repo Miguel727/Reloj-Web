@@ -99,6 +99,11 @@ const Inicio = () => {
       }
   
       const doc = new jsPDF();
+
+      let startX = 10;
+      //let centerX;
+      let startY = 20;
+      
       const tableColumn = ["Fecha", "Entrada", "Salida"];
       const tableRows = [];
       const title =
