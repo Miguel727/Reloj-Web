@@ -11,10 +11,7 @@ import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
 import { API_BASE_URL } from "../../../src/config";
 
-
 const url = `${API_BASE_URL}/reporte`;
-//const url = "http://control.horario.ic.gub.uy/api/reporte";
-//var token = sessionStorage.getItem("token");
 
 const headers = {
   Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -25,16 +22,22 @@ const Inicio = () => {
   const [data, setData] = useState(null);
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
+  const [tieneToken, setTieneToken] = useState(false);
+
   let user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
-    //prueba 
-   // token = sessionStorage.getItem("token");
     obtenerFechasPorDefecto(); 
   }, []);
+
+  useEffect(() => {
+    if(sessionStorage.getItem("token") != null){
+      setTieneToken(true);
+    }
+  }, [sessionStorage]);
  
   useEffect(() => {
-    if (desde && hasta) {
+    if (desde && hasta && tieneToken) {
       fetchData();
     }
   }, [desde, hasta]);
@@ -236,9 +239,9 @@ const Inicio = () => {
               </Form.Group>
             </Col>
           </Row>
-          <Button variant="primary" onClick={imprimirTabla} className="custom-button">
+          {/* <Button variant="primary" onClick={imprimirTabla} className="custom-button">
             Descargar PDF
-          </Button>
+          </Button> */}
         </Form>
 
         {data && (
