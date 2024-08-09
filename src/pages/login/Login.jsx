@@ -47,6 +47,7 @@ const Login = () => {
 
           sessionStorage.setItem("token", result.data.access_token);
           sessionStorage.setItem("user", JSON.stringify(result.data.user));
+          
           dispatch({
             type: "LOGIN_SUCCESS",
             payload: result.data.user,

@@ -9,12 +9,15 @@ import "./inicio.css";
 import Footer from "../../components/footer/Footer";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
+import { API_BASE_URL } from "../../../src/config";
 
-const url = "http://control.horario.ic.gub.uy/api/reporte";
-let token = sessionStorage.getItem("token")
+
+const url = `${API_BASE_URL}/reporte`;
+//const url = "http://control.horario.ic.gub.uy/api/reporte";
+//var token = sessionStorage.getItem("token");
 
 const headers = {
-  Authorization: `Bearer ${token}`,
+  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
   Accept: "application/json",
 };
 
@@ -23,9 +26,14 @@ const Inicio = () => {
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
   let user = JSON.parse(sessionStorage.getItem("user"));
+
+  useEffect(() => {
+    //prueba 
+   // token = sessionStorage.getItem("token");
+    obtenerFechasPorDefecto(); 
+  }, []);
  
   useEffect(() => {
-    obtenerFechasPorDefecto();
     if (desde && hasta) {
       fetchData();
     }
@@ -148,7 +156,7 @@ const Inicio = () => {
         margin: { top: 10 },
       });
   
-      //doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
+      doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
       doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
     };
 
