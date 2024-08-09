@@ -23,24 +23,35 @@ const Inicio = () => {
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
   const [tieneToken, setTieneToken] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   let user = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
-    obtenerFechasPorDefecto(); 
+    obtenerFechasPorDefecto();
   }, []);
 
   useEffect(() => {
-    if(sessionStorage.getItem("token") != null){
-      setTieneToken(true);
-    }
-  }, [sessionStorage]);
- 
+    const initialize = async () => {
+      // Verifica si hay un token y actualiza el estado
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        setTieneToken(true);
+      }
+      // Establece las fechas por defecto si no están establecidas
+      await obtenerFechasPorDefecto();
+    };
+
+    initialize();
+  }, []);
+
   useEffect(() => {
+    // Asegúrate de que fetchData solo se ejecuta cuando tieneToken, desde, y hasta están correctamente establecidos
     if (desde && hasta && tieneToken) {
       fetchData();
     }
-  }, [desde, hasta]);
+  }, [desde, hasta, tieneToken]);
 
   const obtenerFechasPorDefecto = async () => {
     if (!desde || !hasta) {
@@ -57,11 +68,10 @@ const Inicio = () => {
       setDesde(primerDiaDelMes);
       setHasta(fechaActualISO);
     }
-
-    await fetchData();
   };
 
   const fetchData = async () => {
+    setLoading(true); // Inicia la carga
     try {
       const response = await axios.post(
         url,
@@ -75,20 +85,25 @@ const Inicio = () => {
         },
         { headers }
       );
-      
+
       let registros = null;
-      
-      if(response.data.registros_ok){
+
+      if (response.data.registros_ok) {
         registros = response.data.registros_ok[user.fk_empleado_codigo];
       }
-
-        // Invertir el orden de los datos
+      if (registros && registros.length > 0) {
         registros = registros.reverse();
+        setData(registros);
 
-
-      setData(registros);
+      }
+      else { 
+        window.location.reload(); 
+      }
     } catch (error) {
       console.log(error);
+    }
+    finally {
+      setLoading(false); // Finaliza la carga
     }
   };
 
@@ -105,30 +120,30 @@ const Inicio = () => {
   };
 
   const imprimirTabla = () => {
-      if (!data) {
-        return;
-      }
-  
-      const doc = new jsPDF();
+    if (!data) {
+      return;
+    }
 
-      let startX = 10;
-      //let centerX;
-      let startY = 20;
-      let currentY = startY;
-      const tableColumn = ["Fecha", "Entrada", "Salida"];
-      const tableRows = [];
-      const title =
+    const doc = new jsPDF();
+
+    let startX = 10;
+    //let centerX;
+    let startY = 20;
+    let currentY = startY;
+    const tableColumn = ["Fecha", "Entrada", "Salida"];
+    const tableRows = [];
+    const title =
       "Reporte usuario: " + quitarPrefijoFicha(user.fk_empleado_codigo);
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-  
-      doc.setFontSize(16);
-      doc.text(title, startX, currentY);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+
+    doc.setFontSize(16);
+    doc.text(title, startX, currentY);
 
 
-      const imageWidth = 75;
+    const imageWidth = 75;
     const imageHeight = 20;
     const imageX = doc.internal.pageSize.width - imageWidth - startX;
     doc.addImage(
@@ -141,27 +156,27 @@ const Inicio = () => {
     );
 
 
-      data.forEach(row => {
-        const rowData = [
-          row.registro_fecha.split('-').reverse().join('-'),
-          row.entrada,
-          row.salida,
-        ];
-        tableRows.push(rowData);
-      });
-  
-      autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: 50,
-        theme: 'striped',
-        headStyles: { fillColor: [22, 160, 133] },
-        margin: { top: 10 },
-      });
-  
-      doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
-      doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
-    };
+    data.forEach(row => {
+      const rowData = [
+        row.registro_fecha.split('-').reverse().join('-'),
+        row.entrada,
+        row.salida,
+      ];
+      tableRows.push(rowData);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 50,
+      theme: 'striped',
+      headStyles: { fillColor: [22, 160, 133] },
+      margin: { top: 10 },
+    });
+
+    doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
+    doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
+  };
 
 
 
@@ -177,7 +192,7 @@ const Inicio = () => {
       },
       sortable: true,
     }
-,    
+    ,
     {
       name: "Entrada",
       selector: (row) => row.entrada,
@@ -188,7 +203,7 @@ const Inicio = () => {
       selector: (row) => row.salida,
       sortable: true,
     },
-  
+
   ];
 
   const paginacionOpciones = {
@@ -210,12 +225,10 @@ const Inicio = () => {
   return (
     <>
       <NavBar className="nav" />
-
+  
       <div className="container-fluid" id="root">
         <h4>Funcionario: {user.nombre} </h4>
-
-        {/* <Form onSubmit={handleSubmit}> */}
-
+  
         <Form>
           <Row>
             <Col>
@@ -239,41 +252,49 @@ const Inicio = () => {
               </Form.Group>
             </Col>
           </Row>
-          {/* <Button variant="primary" onClick={imprimirTabla} className="custom-button">
+          <Button variant="primary" onClick={imprimirTabla} className="custom-button">
             Descargar PDF
-          </Button> */}
+          </Button>
         </Form>
-
-        {data && (
-          <DataTable
-            id="tabla"
-            className="tabla"
-            columns={columnas}
-            data={data}
-            title=""
-            pagination
-            paginationComponentOptions={paginacionOpciones}
-            fixedHeader
-            fixedHeaderScrollHeight="600px"
-            noDataComponent={<span>No hay datos disponibles</span>}
-            striped
-            highlightOnHover
-            customStyles={{
-              rows: {
-                style: {
-                  backgroundColor: "#a8b5c1",
-                  color: "#000",
+  
+        {loading ? (
+              <div className="col-md-12 mt-3 text-center">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>           
+        ) : (
+          data && (
+            <DataTable
+              id="tabla"
+              className="tabla"
+              columns={columnas}
+              data={data}
+              title=""
+              pagination
+              paginationComponentOptions={paginacionOpciones}
+              fixedHeader
+              fixedHeaderScrollHeight="600px"
+              noDataComponent={<span>No hay datos disponibles</span>}
+              striped
+              highlightOnHover
+              customStyles={{
+                rows: {
+                  style: {
+                    backgroundColor: "#a8b5c1",
+                    color: "#000",
+                  },
                 },
-              },
-            }}
-          />
-      
+              }}
+            />
+          )
         )}
       </div>
-
+  
       <Footer />
     </>
   );
+  
 };
 
 export default Inicio;
