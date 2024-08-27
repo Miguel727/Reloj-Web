@@ -10,6 +10,8 @@ const NavBar = () => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     dispatch({ type: "LOGIN_ERROR" });
     navigate("/");
   };
