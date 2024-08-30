@@ -21,6 +21,7 @@ function App() {
           <Route exact path="/reasignar" element={<Reasignar />}></Route>
           <Route exact path="/recuperar" element={<Recuperar />}></Route>
           <Route exact path="/agregar-email" element={<AgregarEmail />} />
+       
         </Routes>
       </BrowserRouter>
     </>

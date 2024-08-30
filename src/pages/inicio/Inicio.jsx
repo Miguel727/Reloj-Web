@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useAuthRedirect} from '../../hooks/UseAuthRedirect';
 import logoIntendencia from "../../img/LOGO.png";
 import axios from "axios";
 import NavBar from "../../components/navbar/NavBar";
@@ -11,47 +11,32 @@ import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
 import { API_BASE_URL } from "../../../src/config";
 
-const url = `${API_BASE_URL}/reporte`;
-
-const headers = {
-  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-  Accept: "application/json",
-};
 
 const Inicio = () => {
+
+
   const [data, setData] = useState(null);
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
-  const [tieneToken, setTieneToken] = useState(false);
   const [loading, setLoading] = useState(false);
-
-
   let user = JSON.parse(sessionStorage.getItem("user"));
-
+  const url = `${API_BASE_URL}/reporte`;
+ 
+  const headers = {
+    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+    Accept: "application/json",
+  };
+ 
   useEffect(() => {
-    obtenerFechasPorDefecto();
-  }, []);
-
-  useEffect(() => {
-    const initialize = async () => {
-      // Verifica si hay un token y actualiza el estado
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        setTieneToken(true);
-      }
-      // Establece las fechas por defecto si no están establecidas
-      await obtenerFechasPorDefecto();
-    };
-
-    initialize();
-  }, []);
-
-  useEffect(() => {
-    // Asegúrate de que fetchData solo se ejecuta cuando tieneToken, desde, y hasta están correctamente establecidos
-    if (desde && hasta && tieneToken) {
+ 
+    if (desde && hasta) {
       fetchData();
     }
-  }, [desde, hasta, tieneToken]);
+    else {
+      obtenerFechasPorDefecto();
+    }
+
+  }, [desde, hasta]);
 
   const obtenerFechasPorDefecto = async () => {
     if (!desde || !hasta) {
@@ -59,7 +44,6 @@ const Inicio = () => {
       const primerDiaDelMes = new Date(
         fechaActual.getFullYear(),
         fechaActual.getMonth(),
-        1
       )
         .toISOString()
         .split("T")[0];
@@ -96,8 +80,8 @@ const Inicio = () => {
         setData(registros);
 
       }
-      else { 
-        window.location.reload(); 
+      else {
+        window.location.reload();
       }
     } catch (error) {
       console.log(error);
@@ -174,14 +158,9 @@ const Inicio = () => {
       margin: { top: 10 },
     });
 
-    doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
+    //doc.text(`Reporte usuario: ${quitarPrefijoFicha(user.fk_empleado_codigo)}`, 14, 15);
     doc.save(`Reporte_${quitarPrefijoFicha(user.fk_empleado_codigo)}.pdf`);
   };
-
-
-
-
-
 
   const columnas = [
     {
@@ -225,10 +204,10 @@ const Inicio = () => {
   return (
     <>
       <NavBar className="nav" />
-  
+
       <div className="container-fluid" id="root">
         <h4>Funcionario: {user.nombre} </h4>
-  
+
         <Form>
           <Row>
             <Col>
@@ -256,13 +235,13 @@ const Inicio = () => {
             Descargar PDF
           </Button>
         </Form>
-  
+
         {loading ? (
-              <div className="col-md-12 mt-3 text-center">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-              </div>           
+          <div className="col-md-12 mt-3 text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
         ) : (
           data && (
             <DataTable
@@ -290,11 +269,11 @@ const Inicio = () => {
           )
         )}
       </div>
-  
+
       <Footer />
     </>
   );
-  
+
 };
 
 export default Inicio;
