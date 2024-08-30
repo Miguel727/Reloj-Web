@@ -13,7 +13,8 @@ import { API_BASE_URL } from "../../../src/config";
 
 
 const Inicio = () => {
-
+  
+  useAuthRedirect();
 
   const [data, setData] = useState(null);
   const [desde, setDesde] = useState("");
