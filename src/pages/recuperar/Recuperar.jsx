@@ -1,4 +1,5 @@
 import NavBar from "../../components/navbar/NavBar";
+import {useAuthRedirect} from '../../hooks/UseAuthRedirect';
 import "./Recuperar.css";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -8,6 +9,9 @@ import { API_BASE_URL } from "../../../src/config";
 import Swal from "sweetalert2";
 
 const Recuperar = () => {
+
+  useAuthRedirect();
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

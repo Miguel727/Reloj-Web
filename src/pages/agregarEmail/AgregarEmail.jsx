@@ -1,4 +1,5 @@
 import NavBar from "../../components/navbar/NavBar";
+import {useAuthRedirect} from '../../hooks/UseAuthRedirect';
 import "./AgregarEmail.css";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -8,6 +9,10 @@ import { API_BASE_URL } from "../../../src/config";
 import Swal from "sweetalert2";
 
 const AgregarEmail = () => {
+
+  useAuthRedirect();
+
+
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 

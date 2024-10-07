@@ -76,7 +76,8 @@ const Inicio = () => {
       if (response.data.registros_ok) {
         registros = response.data.registros_ok[user.fk_empleado_codigo];
       }
-      if (registros && registros.length > 0) {
+      console.log(registros);
+      if (registros && registros.length >= 0) {
         registros = registros.reverse();
         setData(registros);
 
