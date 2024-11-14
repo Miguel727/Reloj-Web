@@ -16,7 +16,14 @@ const Recuperar = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    dispatch({ type: "LOGIN_ERROR" });
+    navigate("/");
+  };
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem("user"));
 
@@ -41,6 +48,18 @@ const Recuperar = () => {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
+
+    
+    if (newPassword.length < 6 || confirmPassword.length < 6) {
+      setLoading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'La nueva contraseña y su confirmación deben tener al menos 6 caracteres.',
+      });
+      return;
+    }
+
 
     if (newPassword !== confirmPassword) {
       setLoading(false);
@@ -70,7 +89,7 @@ const Recuperar = () => {
           title: "Contraseña cambiada",
           text: response.data.message,
         }).then(() => {
-          navigate("/inicio");
+          logout();
         });
       } else {
         setLoading(false);

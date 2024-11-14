@@ -37,8 +37,10 @@ const Login = () => {
     const codigoModificado = agregarPrefijoFicha(fk_empleado_codigo); 
     const requestData = { fk_empleado_codigo: codigoModificado, password };
     
-    axios
-      .post(`${API_BASE_URL}/loginApi`, requestData)
+    axios.post(`${API_BASE_URL}/loginApi`, requestData, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true
+      })
       .then((result) => {
        
         if (result.status === HttpStatusCode.Ok) {
@@ -58,7 +60,19 @@ const Login = () => {
         }
       })
       .catch((error) => {
-       
+        if (error.response) {
+          // La solicitud fue realizada y el servidor respondió con un código de estado fuera del rango de 2xx
+          console.log("Error Response Data:", error.response.data);
+          console.log("Error Response Status:", error.response.status);
+          console.log("Error Response Headers:", error.response.headers);
+        } else if (error.request) {
+            // La solicitud fue hecha pero no se recibió respuesta
+            console.log("Error Request:", error.request);
+        } else {
+            // Algo sucedió al configurar la solicitud que provocó un error
+            console.log("Error Message:", error.message);
+        }
+        console.log("Error Config:", error.config);
         setLoading(false);
 
         Swal.fire({
